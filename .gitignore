@@ -14,6 +14,12 @@ dist/
 .next/
 *.tsbuildinfo
 
+# .NET / MAUI
+bin/
+obj/
+*.user
+.vs/
+
 # OS
 .DS_Store
 Thumbs.db
