@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="SkyLearnIQ.Tutor.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.FlyoutBehavior="Locked"
+    FlyoutWidth="220"
+    FlyoutBackgroundColor="#F8FAFC"
+    Shell.TabBarIsVisible="False">
+
+    <!-- Sidebar header -->
+    <Shell.FlyoutHeader>
+        <Grid HeightRequest="110" BackgroundColor="#15803D" Padding="20,16">
+            <VerticalStackLayout VerticalOptions="Center" Spacing="3">
+                <Label Text="🧠 SKYLearn IQ" FontSize="18" FontAttributes="Bold" TextColor="White" />
+                <Label Text="Tutor Portal" FontSize="12" TextColor="#BBF7D0" />
+                <Label x:Name="TutorNameLabel" FontSize="11" TextColor="#86EFAC" />
+            </VerticalStackLayout>
+        </Grid>
+    </Shell.FlyoutHeader>
+
+    <!-- Nav items -->
+    <FlyoutItem Title="Dashboard" FlyoutIcon="house_fill.png">
+        <ShellContent x:Name="dashboardContent" Route="dashboard" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Learners" FlyoutIcon="people_fill.png">
+        <ShellContent x:Name="learnersContent" Route="learners" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Assessments" FlyoutIcon="document_fill.png">
+        <ShellContent x:Name="assessmentsContent" Route="assessments" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="Sessions" FlyoutIcon="clipboard_fill.png">
+        <ShellContent x:Name="sessionsContent" Route="sessions" />
+    </FlyoutItem>
+
+    <!-- Sign-out footer -->
+    <Shell.FlyoutFooterTemplate>
+        <DataTemplate>
+            <Button Text="Sign Out"
+                    BackgroundColor="#EF4444"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    CornerRadius="10"
+                    Margin="16,8,16,16"
+                    HeightRequest="44"
+                    Clicked="OnSignOut_Clicked" />
+        </DataTemplate>
+    </Shell.FlyoutFooterTemplate>
+
+    <!-- FlyoutItem styling -->
+    <Shell.Resources>
+        <Style TargetType="FlyoutItem">
+            <Setter Property="Shell.ItemTemplate">
+                <DataTemplate>
+                    <Grid HeightRequest="52" Padding="20,0" BackgroundColor="Transparent">
+                        <Label Text="{Binding Title}"
+                               VerticalOptions="Center"
+                               FontSize="14"
+                               TextColor="#0F172A" />
+                    </Grid>
+                </DataTemplate>
+            </Setter>
+        </Style>
+    </Shell.Resources>
+</Shell>

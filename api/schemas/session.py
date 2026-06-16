@@ -62,3 +62,28 @@ class SessionStartOut(BaseModel):
     assessment_id: int
     started_at: datetime
     model_config = {"from_attributes": True}
+
+
+class TutorFeedbackIn(BaseModel):
+    content: str
+    strength_areas: Optional[str] = None
+    weakness_areas: Optional[str] = None
+    recommendations: Optional[str] = None
+
+
+class MarkAnswerIn(BaseModel):
+    marks_awarded: float
+    is_correct: bool
+
+
+class SessionSummaryOut(BaseModel):
+    id: int
+    assessment_id: int
+    assessment_title: str
+    learner_id: int
+    learner_name: str
+    learner_phone: str
+    status: SessionStatus
+    started_at: datetime
+    completed_at: Optional[datetime]
+    score: Optional[ScoreOut] = None

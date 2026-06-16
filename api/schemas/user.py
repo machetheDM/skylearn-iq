@@ -46,3 +46,13 @@ class UserOut(BaseModel):
     is_active: bool
 
     model_config = {"from_attributes": True}
+
+
+class LearnerOut(BaseModel):
+    user_id: int
+    learner_id: int
+    full_name: str
+    phone: str
+    grade: Optional[str] = None
+    track: str = ""
+    total_sessions: int = 0

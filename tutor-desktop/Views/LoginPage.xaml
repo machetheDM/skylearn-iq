@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="SkyLearnIQ.Tutor.Views.LoginPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.NavBarIsVisible="False"
+    BackgroundColor="#15803D">
+
+    <Grid RowDefinitions="*,Auto,*" HorizontalOptions="Center" WidthRequest="420">
+
+        <!-- Logo -->
+        <VerticalStackLayout Grid.Row="0" VerticalOptions="End" HorizontalOptions="Center" Spacing="4" Padding="0,0,0,24">
+            <Label Text="🧠 SKYLearn IQ" FontSize="36" FontAttributes="Bold" TextColor="White" HorizontalOptions="Center" />
+            <Label Text="AI-Powered Learning Platform" FontSize="14" TextColor="#BBF7D0" HorizontalOptions="Center" />
+            <Label Text="Tutor Portal" FontSize="13" TextColor="#86EFAC" HorizontalOptions="Center" />
+        </VerticalStackLayout>
+
+        <!-- Card -->
+        <Border Grid.Row="1"
+                BackgroundColor="White"
+                StrokeShape="RoundRectangle 20"
+                Stroke="#E2E8F0"
+                Padding="32">
+            <VerticalStackLayout Spacing="0">
+
+                <Label Text="Sign In" FontSize="22" FontAttributes="Bold" TextColor="#0F172A" Margin="0,0,0,24" />
+
+                <Label Text="Phone Number" FontSize="12" FontAttributes="Bold" TextColor="#64748B" Margin="0,0,0,6" />
+                <Border StrokeShape="RoundRectangle 10" Stroke="#CBD5E1" Padding="4,0" Margin="0,0,0,16">
+                    <Entry Placeholder="+27710000001" Text="{Binding Phone}" Keyboard="Telephone"
+                           FontSize="15" BackgroundColor="Transparent" />
+                </Border>
+
+                <Label Text="Password" FontSize="12" FontAttributes="Bold" TextColor="#64748B" Margin="0,0,0,6" />
+                <Border StrokeShape="RoundRectangle 10" Stroke="#CBD5E1" Padding="4,0" Margin="0,0,0,8">
+                    <Entry Placeholder="Your password" Text="{Binding Password}" IsPassword="True"
+                           FontSize="15" BackgroundColor="Transparent" />
+                </Border>
+
+                <Label Text="{Binding ErrorMessage}" TextColor="#EF4444" FontSize="13"
+                       IsVisible="{Binding ErrorMessage, Converter={x:StaticResource StringNotEmptyConverter}}"
+                       Margin="0,0,0,8" />
+
+                <Button Text="Sign In"
+                        Command="{Binding LoginCommand}"
+                        IsEnabled="{Binding IsLoading, Converter={x:StaticResource InvertBoolConverter}}"
+                        BackgroundColor="#15803D"
+                        TextColor="White"
+                        FontAttributes="Bold"
+                        FontSize="16"
+                        CornerRadius="12"
+                        HeightRequest="50"
+                        Margin="0,8,0,0" />
+
+                <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                   IsVisible="{Binding IsLoading}"
+                                   Color="#15803D"
+                                   HorizontalOptions="Center"
+                                   Margin="0,8,0,0" />
+            </VerticalStackLayout>
+        </Border>
+
+        <Label Grid.Row="2"
+               Text="SKYLearn-Innovation NPO · Tutors only"
+               TextColor="#BBF7D0"
+               FontSize="12"
+               HorizontalOptions="Center"
+               VerticalOptions="Start"
+               Margin="0,20,0,0" />
+    </Grid>
+</ContentPage>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="SkyLearnIQ.Tutor.Views.SessionsPage"
+    x:Name="Self"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:SkyLearnIQ.Tutor.Models"
+    Title="{Binding Title}"
+    BackgroundColor="#F8FAFC">
+
+    <Grid RowDefinitions="Auto,*" Padding="16">
+
+        <ActivityIndicator Grid.Row="0" IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                           Color="#15803D" HorizontalOptions="Center" Margin="0,4,0,8" />
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Sessions}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SessionSummaryOut">
+                    <Border BackgroundColor="White" StrokeShape="RoundRectangle 14"
+                            Stroke="#E2E8F0" Padding="16" Margin="0,0,0,8">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={x:Reference Self}, Path=BindingContext.OpenSessionCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="12">
+
+                            <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                <Label Text="{Binding LearnerName}" FontSize="15"
+                                       FontAttributes="Bold" TextColor="#0F172A" />
+                                <Label Text="{Binding AssessmentTitle}" FontSize="12" TextColor="#64748B" />
+                                <Label Text="{Binding DateDisplay}" FontSize="11" TextColor="#94A3B8" />
+                            </VerticalStackLayout>
+
+                            <!-- Score badge -->
+                            <Border Grid.Column="1"
+                                    StrokeShape="RoundRectangle 10"
+                                    Padding="12,6"
+                                    BackgroundColor="#F0FDF4"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding ScoreDisplay}"
+                                       FontSize="16" FontAttributes="Bold"
+                                       TextColor="#15803D" HorizontalOptions="Center" />
+                            </Border>
+
+                            <!-- Status badge -->
+                            <Border Grid.Column="2"
+                                    StrokeShape="RoundRectangle 8"
+                                    Padding="10,5"
+                                    BackgroundColor="#F1F5F9"
+                                    VerticalOptions="Center">
+                                <Label Text="{Binding StatusDisplay}"
+                                       FontSize="11" TextColor="#64748B" />
+                            </Border>
+
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
+</ContentPage>

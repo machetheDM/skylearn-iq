@@ -6,7 +6,7 @@ from database import get_db
 from models.user import User, Learner
 from models.assessment import Assessment, Question, Option, QuestionType
 from models.session import AssessmentSession, Answer, Score, Feedback, SessionStatus, FeedbackSource
-from schemas.session import SubmitSessionIn, SessionOut, SessionStartOut, ScoreOut
+from schemas.session import SubmitSessionIn, SessionOut, SessionStartOut, ScoreOut, TutorFeedbackIn, MarkAnswerIn, SessionSummaryOut
 from core.auth import get_current_user, require_tutor
 
 router = APIRouter(prefix="/api/sessions", tags=["Sessions"])
@@ -133,3 +133,73 @@ def all_sessions_for_tutor(
     if not a:
         raise HTTPException(404, "Assessment not found")
     return db.query(AssessmentSession).filter(AssessmentSession.assessment_id == assessment_id).all()
+
+
+@router.get("/tutor/sessions", response_model=List[SessionSummaryOut])
+def all_sessions_overview(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_tutor),
+):
+    sessions = db.query(AssessmentSession).order_by(AssessmentSession.id.desc()).all()
+    result = []
+    for s in sessions:
+        result.append(SessionSummaryOut(
+            id=s.id,
+            assessment_id=s.assessment_id,
+            assessment_title=s.assessment.title if s.assessment else "",
+            learner_id=s.learner_id,
+            learner_name=s.learner.user.full_name if s.learner and s.learner.user else "",
+            learner_phone=s.learner.user.phone if s.learner and s.learner.user else "",
+            status=s.status,
+            started_at=s.started_at,
+            completed_at=s.completed_at,
+            score=ScoreOut.model_validate(s.score) if s.score else None,
+        ))
+    return result
+
+
+@router.post("/{session_id}/feedback", status_code=201)
+def add_tutor_feedback(
+    session_id: int,
+    body: TutorFeedbackIn,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_tutor),
+):
+    s = db.query(AssessmentSession).filter(AssessmentSession.id == session_id).first()
+    if not s:
+        raise HTTPException(404, "Session not found")
+    fb = Feedback(
+        session_id=session_id,
+        generated_by=FeedbackSource.TUTOR,
+        content=body.content,
+        strength_areas=body.strength_areas,
+        weakness_areas=body.weakness_areas,
+        recommendations=body.recommendations,
+    )
+    db.add(fb); db.commit(); db.refresh(fb)
+    return {"id": fb.id, "message": "Feedback saved"}
+
+
+@router.patch("/{session_id}/answers/{answer_id}/mark")
+def mark_answer(
+    session_id: int,
+    answer_id: int,
+    body: MarkAnswerIn,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_tutor),
+):
+    answer = db.query(Answer).filter(Answer.id == answer_id, Answer.session_id == session_id).first()
+    if not answer:
+        raise HTTPException(404, "Answer not found")
+    answer.marks_awarded = body.marks_awarded
+    answer.is_correct = body.is_correct
+    answer.auto_marked = False
+    all_answers = db.query(Answer).filter(Answer.session_id == session_id).all()
+    total_awarded = sum(a.marks_awarded for a in all_answers)
+    score = db.query(Score).filter(Score.session_id == session_id).first()
+    if score:
+        score.total_marks_awarded = total_awarded
+        score.percentage = round((total_awarded / score.total_marks_possible * 100), 2) if score.total_marks_possible > 0 else 0.0
+        score.pass_fail = score.percentage >= 40.0
+    db.commit()
+    return {"message": "Marked", "marks_awarded": body.marks_awarded}
