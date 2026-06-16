@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "SKYLearn IQ",
+    "slug": "skylearn-iq-learner",
+    "version": "1.0.0",
+    "scheme": "skylearn-learner",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#2563EB"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#2563EB"
+      },
+      "package": "org.skylearn.iq.learner"
+    },
+    "ios": {
+      "bundleIdentifier": "org.skylearn.iq.learner"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

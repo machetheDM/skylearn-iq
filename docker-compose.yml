@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: skylearn-iq-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: skylearn
+      POSTGRES_PASSWORD: skylearn_secret
+      POSTGRES_DB: skylearn_iq
+    ports:
+      - "5433:5432"
+    volumes:
+      - skylearn_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U skylearn -d skylearn_iq"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./api
+    container_name: skylearn-iq-api
+    restart: unless-stopped
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://skylearn:skylearn_secret@db:5432/skylearn_iq
+      SECRET_KEY: change-me-in-production
+      ACCESS_TOKEN_EXPIRE_DAYS: 30
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./api:/app
+
+volumes:
+  skylearn_pg_data:
