@@ -20,20 +20,24 @@
     </Shell.FlyoutHeader>
 
     <!-- Nav items -->
-    <FlyoutItem Title="Dashboard" FlyoutIcon="house_fill.png">
+    <FlyoutItem Title="Dashboard">
         <ShellContent x:Name="dashboardContent" Route="dashboard" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Learners" FlyoutIcon="people_fill.png">
+    <FlyoutItem Title="Learners">
         <ShellContent x:Name="learnersContent" Route="learners" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Assessments" FlyoutIcon="document_fill.png">
+    <FlyoutItem Title="Assessments">
         <ShellContent x:Name="assessmentsContent" Route="assessments" />
     </FlyoutItem>
 
-    <FlyoutItem Title="Sessions" FlyoutIcon="clipboard_fill.png">
+    <FlyoutItem Title="Sessions">
         <ShellContent x:Name="sessionsContent" Route="sessions" />
+    </FlyoutItem>
+
+    <FlyoutItem Title="ML Analytics">
+        <ShellContent x:Name="analyticsContent" Route="analytics" />
     </FlyoutItem>
 
     <!-- Sign-out footer -->

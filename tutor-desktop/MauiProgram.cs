@@ -42,6 +42,7 @@ public static class MauiProgram
         // Services
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<ApiService>();
+        builder.Services.AddSingleton<MlApiService>();
 
         // ViewModels
         builder.Services.AddTransient<LoginViewModel>();
@@ -50,6 +51,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AssessmentsViewModel>();
         builder.Services.AddTransient<SessionsViewModel>();
         builder.Services.AddTransient<SessionDetailViewModel>();
+        builder.Services.AddTransient<AnalyticsViewModel>();
 
         // Pages
         builder.Services.AddTransient<LoginPage>();
@@ -58,6 +60,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AssessmentsPage>();
         builder.Services.AddTransient<SessionsPage>();
         builder.Services.AddTransient<SessionDetailPage>();
+        builder.Services.AddTransient<AnalyticsPage>();
 
         // Shell (transient so a fresh one is created on each login)
         builder.Services.AddTransient<AppShell>();

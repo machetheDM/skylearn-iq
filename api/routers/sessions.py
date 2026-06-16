@@ -97,6 +97,18 @@ def submit_session(
     session.status = SessionStatus.COMPLETED
     session.completed_at = datetime.now(timezone.utc)
     db.commit(); db.refresh(session)
+
+    # Fire-and-forget: ask the AI Feedback service (port 8003) to generate feedback.
+    # Runs in a background thread so the submit response is never delayed.
+    import threading, requests as _req
+    def _trigger_ai_feedback(sid: int):
+        try:
+            _req.post("http://localhost:8003/api/feedback/generate",
+                      json={"session_id": sid}, timeout=60)
+        except Exception:
+            pass  # AI service may not be running; feedback can be generated manually
+    threading.Thread(target=_trigger_ai_feedback, args=(session.id,), daemon=True).start()
+
     return session
 
 

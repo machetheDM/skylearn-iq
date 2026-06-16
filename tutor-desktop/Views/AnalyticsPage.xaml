@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage
+    x:Class="SkyLearnIQ.Tutor.Views.AnalyticsPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:SkyLearnIQ.Tutor.Models"
+    Title="ML Analytics"
+    BackgroundColor="#F8FAFC">
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="0">
+
+            <!-- Hero header -->
+            <Grid BackgroundColor="#1E3A5F" Padding="24,20">
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="🧠 ML Analytics Engine" FontSize="20"
+                           FontAttributes="Bold" TextColor="White" />
+                    <Label Text="XGBoost · K-Means · SHAP · ARIMA  |  port 8002"
+                           FontSize="12" TextColor="#93C5FD" />
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Offline banner -->
+            <Border IsVisible="{Binding MlOffline}"
+                    BackgroundColor="#FEF2F2" Stroke="#FCA5A5"
+                    StrokeShape="RoundRectangle 0" Padding="16,10">
+                <Label Text="{Binding StatusMessage}"
+                       TextColor="#DC2626" FontSize="13" FontAttributes="Bold" />
+            </Border>
+
+            <!-- Loading -->
+            <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}"
+                               Color="#1E3A5F" HorizontalOptions="Center" Margin="0,16" />
+
+            <!-- Summary stats row -->
+            <Grid ColumnDefinitions="*,*,*,*" Margin="16,16,16,0" ColumnSpacing="10"
+                  IsVisible="{Binding MlOffline, Converter={StaticResource InvertBoolConverter}}">
+
+                <Border Grid.Column="0" BackgroundColor="White" StrokeShape="RoundRectangle 12"
+                        Stroke="#E2E8F0" Padding="12">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                        <Label Text="{Binding Summary.TotalLearners, FallbackValue='—'}"
+                               FontSize="24" FontAttributes="Bold" TextColor="#0F172A"
+                               HorizontalOptions="Center" />
+                        <Label Text="Total Learners" FontSize="10" TextColor="#94A3B8"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="1" BackgroundColor="#FEF2F2" StrokeShape="RoundRectangle 12"
+                        Stroke="#FECACA" Padding="12">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                        <Label Text="{Binding Summary.AtRiskDisplay, FallbackValue='—'}"
+                               FontSize="24" FontAttributes="Bold" TextColor="#DC2626"
+                               HorizontalOptions="Center" />
+                        <Label Text="At Risk" FontSize="10" TextColor="#94A3B8"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="2" BackgroundColor="White" StrokeShape="RoundRectangle 12"
+                        Stroke="#E2E8F0" Padding="12">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                        <Label Text="{Binding Summary.AvgScoreDisplay, FallbackValue='—'}"
+                               FontSize="24" FontAttributes="Bold" TextColor="#15803D"
+                               HorizontalOptions="Center" />
+                        <Label Text="Avg Score" FontSize="10" TextColor="#94A3B8"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <Border Grid.Column="3" BackgroundColor="White" StrokeShape="RoundRectangle 12"
+                        Stroke="#E2E8F0" Padding="12">
+                    <VerticalStackLayout HorizontalOptions="Center" Spacing="2">
+                        <Label Text="{Binding Summary.TrendEmoji, FallbackValue='—'}"
+                               FontSize="14" FontAttributes="Bold" TextColor="#2563EB"
+                               HorizontalOptions="Center" />
+                        <Label Text="Trend" FontSize="10" TextColor="#94A3B8"
+                               HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <!-- At-Risk Learners -->
+            <Label Text="⚠ At-Risk Learners (XGBoost)" FontSize="15" FontAttributes="Bold"
+                   TextColor="#0F172A" Margin="16,20,16,8"
+                   IsVisible="{Binding MlOffline, Converter={StaticResource InvertBoolConverter}}" />
+
+            <CollectionView ItemsSource="{Binding AtRiskLearners}" Margin="16,0,16,0"
+                            IsVisible="{Binding MlOffline, Converter={StaticResource InvertBoolConverter}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:AtRiskResult">
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 12"
+                                Stroke="#E2E8F0" Padding="14" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="10">
+
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding FullName}" FontSize="14"
+                                           FontAttributes="Bold" TextColor="#0F172A" />
+                                    <Label Text="{Binding AvgScoreDisplay, StringFormat='Avg Score: {0}'}"
+                                           FontSize="12" TextColor="#64748B" />
+                                    <Label Text="{Binding TotalSessions, StringFormat='{0} sessions'}"
+                                           FontSize="11" TextColor="#94A3B8" />
+                                </VerticalStackLayout>
+
+                                <!-- Risk % pill -->
+                                <Border Grid.Column="1"
+                                        StrokeShape="RoundRectangle 20"
+                                        Padding="12,5" VerticalOptions="Center"
+                                        BackgroundColor="#FEE2E2">
+                                    <Label Text="{Binding RiskPercentage}"
+                                           FontSize="13" FontAttributes="Bold"
+                                           TextColor="#DC2626" HorizontalOptions="Center" />
+                                </Border>
+
+                                <!-- Label chip -->
+                                <Border Grid.Column="2"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="10,5" VerticalOptions="Center"
+                                        BackgroundColor="#F1F5F9">
+                                    <Label Text="{Binding RiskLabel}"
+                                           FontSize="11" TextColor="#64748B" />
+                                </Border>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Cluster Overview -->
+            <Label Text="◉ Learner Clusters (K-Means K=3)" FontSize="15" FontAttributes="Bold"
+                   TextColor="#0F172A" Margin="16,20,16,8"
+                   IsVisible="{Binding MlOffline, Converter={StaticResource InvertBoolConverter}}" />
+
+            <CollectionView ItemsSource="{Binding Clusters}" Margin="16,0,16,24"
+                            IsVisible="{Binding MlOffline, Converter={StaticResource InvertBoolConverter}}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:ClusterResult">
+                        <Border BackgroundColor="White" StrokeShape="RoundRectangle 12"
+                                Stroke="#E2E8F0" Padding="14" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+
+                                <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="{Binding FullName}" FontSize="14"
+                                           FontAttributes="Bold" TextColor="#0F172A" />
+                                    <Label Text="{Binding AvgScore, StringFormat='Avg: {0:F0}%'}"
+                                           FontSize="12" TextColor="#64748B" />
+                                </VerticalStackLayout>
+
+                                <Border Grid.Column="1"
+                                        StrokeShape="RoundRectangle 8"
+                                        Padding="12,5" VerticalOptions="Center"
+                                        BackgroundColor="#EFF6FF">
+                                    <Label Text="{Binding ClusterLabel}"
+                                           FontSize="11" FontAttributes="Bold"
+                                           TextColor="#2563EB" />
+                                </Border>
+
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -13,6 +13,7 @@ public partial class AppShell : Shell
         LearnersPage    learners,
         AssessmentsPage assessments,
         SessionsPage    sessions,
+        AnalyticsPage   analytics,
         IServiceProvider services)
     {
         InitializeComponent();
@@ -22,6 +23,7 @@ public partial class AppShell : Shell
         learnersContent.Content    = learners;
         assessmentsContent.Content = assessments;
         sessionsContent.Content    = sessions;
+        analyticsContent.Content   = analytics;
 
         TutorNameLabel.Text = auth.FullName ?? "";
 
