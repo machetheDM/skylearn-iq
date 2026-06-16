@@ -48,7 +48,7 @@ platform covering learner tracking, automated marking, AI feedback, and predicti
 | 3 | .NET MAUI Tutor Desktop App | ✅ COMPLETE | `tutor-desktop/` |
 | 4 | ML Analytics Engine (XGBoost, SHAP, ARIMA, K-Means) + MAUI Analytics page | ✅ COMPLETE | `ml-engine/` |
 | 5 | AI Feedback (LangChain + Groq/Ollama + template fallback) | ✅ COMPLETE | `ai-feedback/` |
-| 6 | Azure Data Lake + Power BI | ⏳ PENDING | `cloud-bi/` |
+| 6 | Azure Data Lake + Power BI | ✅ COMPLETE | `cloud-bi/` |
 
 ---
 
@@ -111,11 +111,25 @@ platform covering learner tracking, automated marking, AI feedback, and predicti
 - Backend integration: sessions.py fires a background thread after session submit → triggers AI feedback automatically
 - Setup: copy `.env.example` → `.env`, add `GROQ_API_KEY`
 
-### Phase 6 — Cloud BI (`cloud-bi/`) ← NEXT
-- Export session/score/learner data to Azure Data Lake Gen2
-- Bronze → Silver → Gold Delta tables (PySpark / Azure Databricks)
-- Synapse Analytics for SQL queries
-- Power BI dashboard: pass rates by subject, at-risk trends, cohort comparisons
+### Phase 6 — Cloud BI (`cloud-bi/`) ← COMPLETE
+- Medallion architecture: SQLite → Bronze Parquet → Silver Parquet → Gold Parquet
+- `export/bronze_export.py` — raw extract from SQLite (8 tables → Parquet)
+- `transform/silver.py` — joins: sessions+scores+learners+users+assessments+subjects; dual-engine (PySpark or pandas)
+- `transform/gold.py` — 4 Gold tables: subject_performance, learner_cohorts, monthly_trends, assessment_stats
+- `azure/provision.sh` — Azure CLI script: ADLS Gen2 + Synapse + Databricks
+- `azure/upload_adls.py` — uploads Parquet to ADLS Gen2 (Bronze/Silver/Gold containers)
+- `azure/synapse_ddl.sql` — Synapse serverless external tables + Power BI-ready views
+- `powerbi/dax_measures.md` — DAX measures + recommended Power BI dashboard pages
+- `main.py` — **Streamlit analytics dashboard** (port 8501) with 5 pages:
+  - Overview (KPI cards: total learners, at-risk count, avg score, pass rate)
+  - Subject Performance (score + pass rate bar charts)
+  - Learner Cohorts (scatter map, risk flags, at-risk table)
+  - Trends (monthly score line + session volume area + pass rate bars)
+  - Assessments (difficulty scatter + stats table)
+- `run_pipeline.py` — one-command pipeline runner (Bronze→Silver→Gold)
+
+**Run dashboard:** `$env:PYTHONUTF8=1; streamlit run main.py`  (from cloud-bi/)  
+**Run pipeline:** `$env:PYTHONUTF8=1; python run_pipeline.py`  (from cloud-bi/)
 
 ---
 
