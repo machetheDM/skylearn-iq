@@ -46,8 +46,8 @@ platform covering learner tracking, automated marking, AI feedback, and predicti
 | 1 | FastAPI Backend + PostgreSQL schema + seed data | ✅ COMPLETE | `api/` |
 | 2 | Expo 52 Learner Mobile App | ✅ COMPLETE | `learner-app/` |
 | 3 | .NET MAUI Tutor Desktop App | ✅ COMPLETE | `tutor-desktop/` |
-| 4 | ML Analytics Engine (XGBoost, SHAP, ARIMA, K-Means) | 🔄 IN PROGRESS | `ml-engine/` |
-| 5 | AI Feedback (LangChain RAG, Ollama/Groq, n8n) | ⏳ PENDING | `ai-feedback/` |
+| 4 | ML Analytics Engine (XGBoost, SHAP, ARIMA, K-Means) + MAUI Analytics page | ✅ COMPLETE | `ml-engine/` |
+| 5 | AI Feedback (LangChain + Groq/Ollama + template fallback) | ✅ COMPLETE | `ai-feedback/` |
 | 6 | Azure Data Lake + Power BI | ⏳ PENDING | `cloud-bi/` |
 
 ---
@@ -93,16 +93,25 @@ platform covering learner tracking, automated marking, AI feedback, and predicti
 
 **TODO for Phase 4:** Wire ml-engine results into the Tutor Desktop dashboard (call port 8002 from ApiService)
 
-### Phase 5 — AI Feedback (`ai-feedback/`) ← NEXT
-- Plan: LangChain RAG pipeline
-  - Vector store: learner session history + subject curriculum docs
-  - LLM: Groq API (Llama 3.1 70B, free tier) or Ollama local fallback
-  - Input: session answers + score + subject
-  - Output: personalised feedback (strengths, weaknesses, recommendations)
-- n8n automation: trigger AI feedback generation when session status = COMPLETED
-- Store generated feedback in `feedbacks` table (generated_by = AI)
+### Phase 4b — MAUI Analytics Page (`tutor-desktop/`)
+- `Models/Analytics.cs` — AtRiskResult, ClusterResult, AnalyticsSummary C# models
+- `Services/MlApiService.cs` — HttpClient singleton for port 8002 (separate from ApiService)
+- `ViewModels/AnalyticsViewModel.cs` — parallel Task.WhenAll for 3 ML endpoints
+- `Views/AnalyticsPage.xaml` — summary stats row (4 cards), At-Risk list with risk%, Cluster list
+- Added as 5th item in AppShell flyout sidebar
+- Shows offline banner if ml-engine is not running (graceful degradation)
 
-### Phase 6 — Cloud BI (`cloud-bi/`) ← FUTURE
+### Phase 5 — AI Feedback (`ai-feedback/`) ← COMPLETE
+- FastAPI app on **port 8003**
+- `feedback_chain.py` — LLM priority: Groq API → Ollama local → deterministic template (always works)
+  - Groq model: `llama-3.1-70b-versatile` (free tier — get key at console.groq.com/keys)
+  - Ollama model: configurable via `OLLAMA_MODEL` env var (default: `llama3.2`)
+- `database.py` — fetch_session_context (all Q&A + score) + save_feedback to feedbacks table
+- `router.py` — POST /api/feedback/generate, GET /api/feedback/health
+- Backend integration: sessions.py fires a background thread after session submit → triggers AI feedback automatically
+- Setup: copy `.env.example` → `.env`, add `GROQ_API_KEY`
+
+### Phase 6 — Cloud BI (`cloud-bi/`) ← NEXT
 - Export session/score/learner data to Azure Data Lake Gen2
 - Bronze → Silver → Gold Delta tables (PySpark / Azure Databricks)
 - Synapse Analytics for SQL queries
