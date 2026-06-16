@@ -1,3 +1,19 @@
+"""
+SKYLearn IQ — FastAPI Backend  (Phase 1 — COMPLETE)
+===================================================
+Purpose : REST API serving both the Learner Mobile App and the Tutor Desktop App.
+Port    : 8001  (run: python -m uvicorn main:app --reload --port 8001)
+DB      : SQLite dev (skylearn_iq.db)  |  PostgreSQL prod (Docker port 5433)
+
+Router map
+  /api/auth/*          — register tutor/learner, login (JWT), /me
+  /api/assessments/*   — CRUD assessments + questions, publish
+  /api/sessions/*      — start, submit (auto-mark MCQ), get, learner/tutor lists,
+                         add-feedback, mark short-answer
+  /api/users/*         — list learners (tutor-only)
+
+See CONTEXT.md at the project root for full architecture and phase progress.
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from database import init_db
